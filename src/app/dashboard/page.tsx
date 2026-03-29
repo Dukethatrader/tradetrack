@@ -2,6 +2,8 @@ import { getDashboardMetrics } from '@/app/actions/dashboard'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Activity, Target, DollarSign, TrendingUp } from "lucide-react"
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const { metrics, error } = await getDashboardMetrics()
 

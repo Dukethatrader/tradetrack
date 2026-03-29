@@ -2,6 +2,8 @@ import { getSettings, updateSettings } from '@/app/actions/settings'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Settings, ShieldAlert, BellRing, Save } from "lucide-react"
 
+export const dynamic = 'force-dynamic';
+
 export default async function SettingsPage() {
   const { success, data, error } = await getSettings()
 

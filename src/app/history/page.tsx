@@ -5,6 +5,8 @@ import { format } from "date-fns"
 import Link from "next/link"
 import { ArrowUpRight, ArrowDownRight, Search } from "lucide-react"
 
+export const dynamic = 'force-dynamic';
+
 export default async function HistoryPage() {
   const { trades, error } = await getTradesHistory()
 

@@ -2,6 +2,8 @@ import { getAnalyticsData } from '@/app/actions/analytics'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart2, AlertCircle, TrendingUp, Tag } from "lucide-react"
 
+export const dynamic = 'force-dynamic';
+
 export default async function AnalyticsPage() {
   const { success, data, error } = await getAnalyticsData()
 
