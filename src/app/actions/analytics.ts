@@ -21,7 +21,7 @@ export async function getAnalyticsData() {
     // Mistakes frequency
     const mistakesMap = new Map();
 
-    trades.forEach(trade => {
+    trades.forEach((trade: any) => {
       // Setups
       if (trade.setupTag) {
         const name = trade.setupTag.name;
