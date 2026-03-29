@@ -1,0 +1,119 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum TradeDirection {
+  BUY
+  SELL
+}
+
+enum TradeStatus {
+  OPEN
+  WIN
+  LOSS
+  BREAKEVEN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  image         String?
+  isPro         Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  rules         TradingRules?
+  trades        Trade[]
+  setupTags     SetupTag[]
+  mistakes      Mistake[]
+}
+
+model TradingRules {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  maxTradesPerDay  Int      @default(0) // 0 implies no strict limit
+  maxTradesPerWeek Int      @default(0)
+  maxRiskPerTrade  Float    @default(0.0)
+  alertsEnabled    Boolean  @default(true)
+  
+  updatedAt        DateTime @updatedAt
+}
+
+model SetupTag {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String   // e.g. "Trend Breakout", "Mean Reversion"
+  trades      Trade[]
+
+  @@unique([userId, name])
+}
+
+model Mistake {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name        String   // e.g. "Overtrading", "Early entry", "FOMO trade"
+  trades      TradeMistake[]
+
+  @@unique([userId, name])
+}
+
+model Trade {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pair            String
+  direction       TradeDirection
+
+  entryPrice      Float
+  stopLoss        Float
+  takeProfit      Float
+  riskPercent     Float?
+  riskAmount      Float?
+  lotSize         Float
+
+  rr              Float?
+
+  setupTagId      String?
+  setupTag        SetupTag? @relation(fields: [setupTagId], references: [id], onDelete: SetNull)
+
+  notes           String?   @db.Text
+  reflection      String?   @db.Text
+  screenshotUrl   String?
+
+  status          TradeStatus @default(OPEN)
+  pnl             Float?
+  returnPercent   Float?
+
+  executionDate   DateTime @default(now())
+  closedAt        DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  mistakes        TradeMistake[]
+
+  @@index([pair])
+}
+
+model TradeMistake {
+  tradeId   String
+  trade     Trade   @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  mistakeId String
+  mistake   Mistake @relation(fields: [mistakeId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+
+  @@id([tradeId, mistakeId])
+}
